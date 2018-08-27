@@ -47,6 +47,15 @@
       }
     }
 
+    &-token {
+      border: 1px solid $border-color;
+
+      .tile-token-name {
+        font-size: 16px;
+        color: $black;
+      }
+    }
+
     &-token-transfer {
       border-left: 4px solid $orange;
 

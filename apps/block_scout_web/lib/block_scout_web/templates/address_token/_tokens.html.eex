@@ -1,0 +1,10 @@
+<div class="tile tile-type-token">
+  <div class="row justify-content">
+    <div class="col-md-3 col-lg-2 d-flex flex-column tile-label">
+      <%= link(to: token_path(@conn, :show, :en, @token.contract_address_hash), class: "tile-token-name") do %>
+        <%= token_name(@token) %>
+      <% end %>
+      <span><%= @token.number_of_transfers %> transfers</span>
+    </div>
+  </div>
+</div>
