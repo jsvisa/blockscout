@@ -188,6 +188,7 @@ defmodule Explorer.Chain do
     |> Transaction.where_address_fields_match(address_hash, direction)
     |> join_associations(necessity_by_association)
     |> Transaction.preload_token_transfers(address_hash)
+    |> Transaction.preload_address_names()
     |> Repo.all()
   end
 
@@ -324,6 +325,7 @@ defmodule Explorer.Chain do
     |> join(:inner, [transaction], block in assoc(transaction, :block))
     |> where([_, block], block.hash == ^block_hash)
     |> join_associations(necessity_by_association)
+    |> Transaction.preload_address_names()
     |> Repo.all()
   end
 
@@ -486,7 +488,7 @@ defmodule Explorer.Chain do
     query =
       from(
         address in Address,
-        preload: [:smart_contract, :contracts_creation_internal_transaction],
+        preload: [:contracts_creation_internal_transaction, :names, :smart_contract],
         where: address.hash == ^hash
       )
 
@@ -596,6 +598,7 @@ defmodule Explorer.Chain do
     fetch_transactions()
     |> where(hash: ^hash)
     |> join_associations(necessity_by_association)
+    |> Transaction.preload_address_names()
     |> Repo.one()
     |> case do
       nil ->
@@ -1070,6 +1073,7 @@ defmodule Explorer.Chain do
     |> where([transaction], not is_nil(transaction.block_number) and not is_nil(transaction.index))
     |> order_by([transaction], desc: transaction.block_number, desc: transaction.index)
     |> join_associations(necessity_by_association)
+    |> Transaction.preload_address_names()
     |> Repo.all()
   end
 
@@ -1258,6 +1262,7 @@ defmodule Explorer.Chain do
     |> page_internal_transaction(paging_options)
     |> limit(^paging_options.page_size)
     |> order_by([internal_transaction], asc: internal_transaction.index)
+    |> Transaction.preload_address_names()
     |> Repo.all()
   end
 
@@ -1402,7 +1407,8 @@ defmodule Explorer.Chain do
 
   defp clear_primary_address_names(%{smart_contract: %SmartContract{address_hash: address_hash}}) do
     clear_primary_query =
-      from(address_name in Address.Name,
+      from(
+        address_name in Address.Name,
         where: address_name.address_hash == ^address_hash,
         update: [set: [primary: false]]
       )

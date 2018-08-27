@@ -1197,7 +1197,8 @@ defmodule Explorer.ChainTest do
       assert smart_contract.contract_source_code != ""
       assert smart_contract.abi != ""
 
-      assert Repo.get_by(Address.Name,
+      assert Repo.get_by(
+               Address.Name,
                address_hash: smart_contract.address_hash,
                name: smart_contract.name,
                primary: true
@@ -1208,7 +1209,8 @@ defmodule Explorer.ChainTest do
       insert(:address_name, address: address, primary: true)
       assert {:ok, %SmartContract{} = smart_contract} = Chain.create_smart_contract(valid_attrs)
 
-      assert Repo.get_by(Address.Name,
+      assert Repo.get_by(
+               Address.Name,
                address_hash: smart_contract.address_hash,
                name: smart_contract.name,
                primary: true

@@ -111,4 +111,24 @@ defmodule BlockScoutWeb.AddressViewTest do
       refute AddressView.smart_contract_with_read_only_functions?(address)
     end
   end
+
+  describe "primary_name/1" do
+    test "gives an address's primary name when present" do
+      address = insert(:address)
+
+      address_name = insert(:address_name, address: address, primary: true, name: "POA Foundation Wallet")
+      insert(:address_name, address: address, name: "POA Wallet")
+
+      preloaded_address = Explorer.Repo.preload(address, :names)
+
+      assert AddressView.primary_name(preloaded_address) == address_name.name
+    end
+
+    test "returns nil when no primary available" do
+      address_name = insert(:address_name, name: "POA Wallet")
+      preloaded_address = Explorer.Repo.preload(address_name.address, :names)
+
+      refute AddressView.primary_name(preloaded_address)
+    end
+  end
 end

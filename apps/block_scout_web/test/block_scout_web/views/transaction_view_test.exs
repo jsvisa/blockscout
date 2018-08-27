@@ -90,4 +90,38 @@ defmodule BlockScoutWeb.TransactionViewTest do
       assert {:ok, _} = Base.decode64(TransactionView.qr_code(transaction))
     end
   end
+
+  describe "to_address_hash/1" do
+    test "with created contract" do
+      transaction = insert(:transaction, to_address: nil, created_contract_address: build(:contract_address))
+
+      assert TransactionView.to_address_hash(transaction) == transaction.created_contract_address_hash
+    end
+
+    test "without a created contract" do
+      transaction = insert(:transaction, to_address: build(:address), created_contract_address: nil)
+
+      assert TransactionView.to_address_hash(transaction) == transaction.to_address_hash
+    end
+  end
+
+  describe "to_address_hash" do
+    test "with created contract" do
+      transaction =
+        :transaction
+        |> insert(to_address: nil, created_contract_address: build(:contract_address))
+        |> Repo.preload([:created_contract_address, :to_address])
+
+      assert TransactionView.to_address(transaction) == transaction.created_contract_address
+    end
+
+    test "without a created contract" do
+      transaction =
+        :transaction
+        |> insert(to_address: build(:address), created_contract_address: nil)
+        |> Repo.preload([:created_contract_address, :to_address])
+
+      assert TransactionView.to_address(transaction) == transaction.to_address
+    end
+  end
 end
