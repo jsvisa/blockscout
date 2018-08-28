@@ -2,7 +2,7 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
   use BlockScoutWeb.FeatureCase, async: true
 
   alias Explorer.Chain.Wei
-  alias BlockScoutWeb.AddressPage
+  alias BlockScoutWeb.{AddressPage, Notifier}
 
   setup do
     block = insert(:block)
@@ -215,6 +215,27 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       |> AddressPage.visit_page(addresses.lincoln)
       |> AddressPage.click_internal_transactions()
       |> assert_has(AddressPage.internal_transaction_address_link(internal_transaction, :from))
+    end
+
+    test "viewing new internal transactions via live update", %{addresses: addresses, session: session} do
+      transaction =
+        :transaction
+        |> insert(from_address: addresses.lincoln)
+        |> with_block()
+
+      session
+      |> AddressPage.visit_page(addresses.lincoln)
+      |> AddressPage.click_internal_transactions()
+      |> assert_has(AddressPage.internal_transactions(count: 2))
+
+      internal_transaction =
+        insert(:internal_transaction, transaction: transaction, index: 0, from_address: addresses.lincoln)
+
+      Notifier.handle_event({:chain_event, :internal_transactions, [internal_transaction]})
+
+      session
+      |> assert_has(AddressPage.internal_transactions(count: 3))
+      |> assert_has(AddressPage.internal_transaction(internal_transaction))
     end
   end
 
