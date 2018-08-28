@@ -5,6 +5,7 @@ defmodule Indexer.MixProject do
     [
       aliases: aliases(),
       app: :indexer,
+      description: "Fetches block chain data from on-chain node for later reading with Explorer.",
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
