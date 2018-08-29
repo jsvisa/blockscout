@@ -67,19 +67,6 @@ defmodule Explorer.Chain do
   @typep paging_options :: {:paging_options, PagingOptions.t()}
 
   @doc """
-  Estimated count of `t:Explorer.Chain.Address.t/0`.
-
-  Estimated count of addresses
-  """
-  @spec address_estimated_count :: non_neg_integer()
-  def address_estimated_count do
-    %Postgrex.Result{rows: [[rows]]} =
-      SQL.query!(Repo, "SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='addresses'")
-
-    rows
-  end
-
-  @doc """
   `t:Explorer.Chain.InternalTransaction/0`s from `address`.
 
   This function excludes any internal transactions in the results where the internal transaction has no siblings within
@@ -1189,19 +1176,6 @@ defmodule Explorer.Chain do
       when event_type in ~w(addresses balances blocks exchange_rate logs transactions)a do
     Registry.register(Registry.ChainEvents, event_type, [])
     :ok
-  end
-
-  @doc """
-  Estimated count of `t:Explorer.Chain.Transaction.t/0`.
-
-  Estimated count of both collated and pending transactions using the transactions table statistics.
-  """
-  @spec transaction_estimated_count() :: non_neg_integer()
-  def transaction_estimated_count do
-    %Postgrex.Result{rows: [[rows]]} =
-      SQL.query!(Repo, "SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='transactions'")
-
-    rows
   end
 
   @doc """
