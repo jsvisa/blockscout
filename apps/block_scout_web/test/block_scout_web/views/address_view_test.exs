@@ -1,7 +1,7 @@
 defmodule BlockScoutWeb.AddressViewTest do
   use BlockScoutWeb.ConnCase, async: true
 
-  alias Explorer.Chain.Data
+  alias Explorer.Chain.{Address, Data, Hash}
   alias BlockScoutWeb.AddressView
   alias Explorer.ExchangeRates.Token
 
@@ -109,6 +109,29 @@ defmodule BlockScoutWeb.AddressViewTest do
       address = insert(:address, smart_contract: nil)
 
       refute AddressView.smart_contract_with_read_only_functions?(address)
+    end
+  end
+
+  describe "hash/1" do
+    test "gives a string version of an address's hash" do
+      address = %Address{
+        hash: %Hash{
+          byte_count: 20,
+          bytes: <<139, 243, 141, 71, 100, 146, 144, 100, 242, 212, 211, 165, 101, 32, 167, 106, 179, 223, 65, 91>>
+        }
+      }
+
+      assert AddressView.hash(address) == "0x8bf38d4764929064f2d4d3a56520a76ab3df415b"
+    end
+  end
+
+  describe "balance_block_number/1" do
+    test "gives empty string with no fetched balance block number present" do
+      assert AddressView.balance_block_number(%Address{}) == ""
+    end
+
+    test "gives block number when fetched balance block number is non-nil" do
+      assert AddressView.balance_block_number(%Address{fetched_balance_block_number: 1_000_000}) == "1000000"
     end
   end
 
