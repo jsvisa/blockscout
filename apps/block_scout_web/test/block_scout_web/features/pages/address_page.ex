@@ -43,10 +43,6 @@ defmodule BlockScoutWeb.AddressPage do
     css("[data-internal-transaction-id='#{id}'] [data-test='address_hash_link'] [data-address-hash='#{address_hash}']")
   end
 
-  def internal_transaction_address_link(%InternalTransaction{id: id, from_address_hash: address_hash}, :from) do
-    css("[data-internal-transaction-id='#{id}'] [data-test='address_hash_link'] [data-address-hash='#{address_hash}']")
-  end
-
   def transaction(%Transaction{hash: transaction_hash}), do: transaction(transaction_hash)
 
   def transaction(%Hash{} = hash) do
@@ -60,10 +56,6 @@ defmodule BlockScoutWeb.AddressPage do
   end
 
   def transaction_address_link(%Transaction{hash: hash, to_address_hash: address_hash}, :to) do
-    css("[data-transaction-hash='#{hash}'] [data-test='address_hash_link'] [data-address-hash='#{address_hash}']")
-  end
-
-  def transaction_address_link(%Transaction{hash: hash, from_address_hash: address_hash}, :from) do
     css("[data-transaction-hash='#{hash}'] [data-test='address_hash_link'] [data-address-hash='#{address_hash}']")
   end
 
@@ -94,9 +86,5 @@ defmodule BlockScoutWeb.AddressPage do
 
   def token_transfers_expansion(%Transaction{hash: transaction_hash}) do
     css("[data-transaction-hash='#{transaction_hash}'] [data-test='token_transfers_expansion']")
-  end
-
-  def transaction_type do
-    css("[data-test='transaction_type']")
   end
 end
