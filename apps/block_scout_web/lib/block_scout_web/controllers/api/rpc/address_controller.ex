@@ -249,7 +249,7 @@ defmodule BlockScoutWeb.API.RPC.AddressController do
 
   defp put_filter_by(options, params) do
     case params do
-      %{"filterby" => filter_by} when filter_by in ["to"] ->
+      %{"filterby" => filter_by} when filter_by in ["to", "from"] ->
         Map.put(options, :filter_by, filter_by)
 
       _ ->
